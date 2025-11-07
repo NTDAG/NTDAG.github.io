@@ -2,93 +2,670 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>我的 TodoList</title>
     <style>
-        body { max-width: 600px; margin: 0 auto; padding: 20px; font-family: sans-serif; }
-        .container { text-align: center; }
-        #taskInput { width: 70%; padding: 8px; }
-        #addBtn { padding: 8px 16px; background: #4CAF50; color: white; border: none; cursor: pointer; }
-        #taskList { list-style: none; padding: 0; margin-top: 20px; }
-        .task-item { padding: 10px; margin: 5px 0; background: #f5f5f5; display: flex; justify-content: space-between; }
-        .task-item.done { text-decoration: line-through; color: #888; }
-        .deleteBtn { background: #ff4444; color: white; border: none; padding: 4px 8px; cursor: pointer; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            /* 主背景色，浅蓝灰色，可替换为自己喜欢的颜色 */
+            background-color: #0f556c;
+            /* 可选：添加轻微渐变，让背景不单调 */
+            background-image: linear-gradient(120deg, #f0f8fb 0%, #f0f3f4 100%);
+            color: #333;
+            /* 让背景占满整个屏幕高度 */
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #f3efef;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 600;
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h1:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: #3498db;
+            border-radius: 3px;
+        }
+
+        /* 标签页样式 */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #e1e4e8;
+            margin-bottom: 25px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #7f8c8d;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .tab.active {
+            color: #3498db;
+            border-bottom-color: #3498db;
+        }
+
+        .tab:hover:not(.active) {
+            color: #3498db;
+            border-bottom-color: #e1e4e8;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 添加任务区域 */
+        .add-task-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .task-main-input {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        #taskInput {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        #taskInput:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        #noteInput {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        #noteInput:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        #addBtn {
+            padding: 12px 24px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            align-self: flex-start;
+        }
+
+        #addBtn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+        }
+
+        #addBtn:active {
+            transform: translateY(0);
+        }
+
+        /* 任务列表样式 */
+        .task-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+            min-height: 100px;
+        }
+
+        .task-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #3498db;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: all 0.3s ease;
+            cursor: grab;
+            position: relative;
+        }
+
+        .task-item.dragging {
+            opacity: 0.7;
+            transform: scale(1.02);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            cursor: grabbing;
+            border-left-color: #9b59b6;
+        }
+
+        .task-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .task-item.done {
+            border-left-color: #2ecc71;
+            opacity: 0.85;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .task-text {
+            font-size: 17px;
+            transition: all 0.3s ease;
+        }
+
+        .task-item.done .task-text {
+            text-decoration: line-through;
+            color: #7f8c8d;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .task-actions button {
+            padding: 6px 12px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .toggleBtn {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+        }
+
+        .toggleBtn:hover {
+            background-color: #dcdde1;
+        }
+
+        .task-item.done .toggleBtn {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .editBtn {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .editBtn:hover {
+            background-color: #e67e22;
+        }
+
+        .deleteBtn {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .deleteBtn:hover {
+            background-color: #c0392b;
+        }
+
+        .task-note {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            font-size: 14px;
+            color: #555;
+            border-left: 2px solid #bdc3c7;
+            margin-top: 5px;
+            white-space: pre-line;
+        }
+
+        /* 更新时间样式 */
+        .update-time {
+            font-size: 12px;
+            color: #95a5a6;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        .edit-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 17px;
+        }
+
+        .edit-note-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-top: 5px;
+            resize: vertical;
+            min-height: 50px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-state p {
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #bdc3c7;
+        }
     </style>
 </head>
 <body>
 <div class="container">
     <h1>TodoList</h1>
-    <input type="text" id="taskInput" placeholder="输入任务...">
-    <button id="addBtn">添加</button>
-    <ul id="taskList"></ul>
+
+    <!-- 标签页切换 -->
+    <div class="tabs">
+        <div class="tab active" data-tab="pending">待办任务</div>
+        <div class="tab" data-tab="completed">已完成任务</div>
+    </div>
+
+    <!-- 待办任务内容 -->
+    <div class="tab-content active" id="pending">
+        <div class="add-task-container">
+            <div class="task-main-input">
+                <input type="text" id="taskInput" placeholder="输入任务...">
+                <button id="addBtn">添加任务</button>
+            </div>
+            <textarea id="noteInput" placeholder="添加备注（可选）..."></textarea>
+        </div>
+        <ul class="task-list" id="pendingList"></ul>
+    </div>
+
+    <!-- 已完成任务内容 -->
+    <div class="tab-content" id="completed">
+        <ul class="task-list" id="completedList"></ul>
+    </div>
 </div>
 
 <script>
     // 获取DOM元素
     const taskInput = document.getElementById('taskInput');
+    const noteInput = document.getElementById('noteInput');
     const addBtn = document.getElementById('addBtn');
-    const taskList = document.getElementById('taskList');
+    const pendingList = document.getElementById('pendingList');
+    const completedList = document.getElementById('completedList');
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    // 初始化任务列表，添加更新时间字段（兼容旧数据）
+    let tasks = JSON.parse(localStorage.getItem('todoTasks') || '[]');
+    tasks = tasks.map(task => ({
+        ...task,
+        updateTime: task.updateTime || new Date().toISOString()
+    }));
+    saveTasks(); // 保存补全字段后的任务
+
+    // 格式化时间为 年-月-日 时:分
+    function formatTime(timeStr) {
+        const date = new Date(timeStr);
+        return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    }
+
+    // 按更新时间降序排序（最新的任务在最前面）
+    function sortTasksByUpdateTime() {
+        tasks.sort((a, b) => new Date(b.updateTime) - new Date(a.updateTime));
+    }
+
+    // 标签页切换功能
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+            tab.classList.add('active');
+            const tabId = tab.getAttribute('data-tab');
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
 
     // 从本地存储加载任务
     function loadTasks() {
-        const tasks = JSON.parse(localStorage.getItem('todoTasks') || '[]');
-        tasks.forEach(task => addTaskToDOM(task.text, task.done));
+        sortTasksByUpdateTime(); // 加载前先排序
+        pendingList.innerHTML = '';
+        completedList.innerHTML = '';
+
+        tasks.forEach((task, index) => {
+            addTaskToDOM(task, index);
+        });
+
+        checkEmptyState();
+        initDragAndDrop(); // 初始化拖拽
+    }
+
+    // 检查空状态并显示提示
+    function checkEmptyState() {
+        if (pendingList.children.length === 0) {
+            pendingList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <h3>暂无待办任务</h3>
+                    <p>添加你的第一个任务吧！</p>
+                </div>
+            `;
+        }
+
+        if (completedList.children.length === 0) {
+            completedList.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">✅</div>
+                    <h3>暂无已完成任务</h3>
+                    <p>完成任务后会显示在这里</p>
+                </div>
+            `;
+        }
     }
 
     // 添加任务到页面
-    function addTaskToDOM(text, done = false) {
+    function addTaskToDOM(task, index) {
         const li = document.createElement('li');
-        li.className = `task-item ${done ? 'done' : ''}`;
+        li.className = `task-item ${task.done ? 'done' : ''}`;
+        li.setAttribute('data-index', index);
+        li.draggable = true;
+
+        // 构建任务HTML（包含备注和更新时间）
+        let noteHtml = '';
+        if (task.note) {
+            noteHtml = `<div class="task-note">📝 ${task.note.replace(/\n/g, '<br>')}</div>`;
+        }
+
         li.innerHTML = `
-        <span>${text}</span>
-        <div>
-          <button class="toggleBtn">${done ? '取消完成' : '完成'}</button>
-          <button class="deleteBtn">删除</button>
-        </div>
-      `;
-        taskList.appendChild(li);
+            <div class="task-header">
+                <span class="task-text">${task.text}</span>
+                <div class="task-actions">
+                    <button class="toggleBtn">${task.done ? '取消完成' : '完成'}</button>
+                    <button class="editBtn">编辑</button>
+                    <button class="deleteBtn">删除</button>
+                </div>
+            </div>
+            ${noteHtml}
+            <div class="update-time">更新于: ${formatTime(task.updateTime)}</div>
+        `;
 
-        // 绑定事件
+        // 根据任务状态添加到对应列表
+        if (task.done) {
+            completedList.appendChild(li);
+        } else {
+            pendingList.appendChild(li);
+        }
+
+        // 完成/取消完成事件
         li.querySelector('.toggleBtn').addEventListener('click', () => {
-            li.classList.toggle('done');
-            const btnText = li.classList.contains('done') ? '取消完成' : '完成';
-            li.querySelector('.toggleBtn').textContent = btnText;
-            saveTasks(); // 保存到本地存储
+            task.done = !task.done;
+            task.updateTime = new Date().toISOString(); // 更新操作时间
+            saveTasks();
+            loadTasks();
         });
 
-        li.querySelector('.deleteBtn').addEventListener('click', () => {
-            li.remove();
-            saveTasks(); // 保存到本地存储
+        // 编辑任务事件
+        li.querySelector('.editBtn').addEventListener('click', () => {
+            const taskTextElement = li.querySelector('.task-text');
+            const currentText = taskTextElement.textContent;
+            const noteElement = li.querySelector('.task-note');
+            const currentNote = noteElement ? noteElement.textContent.replace('📝 ', '').replace(/<br>/g, '\n') : '';
+
+            // 替换为任务输入框
+            taskTextElement.innerHTML = `<input type="text" class="edit-input" value="${currentText}">`;
+            // 替换为备注输入框
+            if (noteElement) {
+                noteElement.innerHTML = `<textarea class="edit-note-input">${currentNote}</textarea>`;
+            } else {
+                const noteEditContainer = document.createElement('div');
+                noteEditContainer.innerHTML = `<textarea class="edit-note-input" placeholder="添加备注...">${currentNote}</textarea>`;
+                li.insertBefore(noteEditContainer, li.querySelector('.update-time'));
+            }
+
+            const editInput = li.querySelector('.edit-input');
+            const editNoteInput = li.querySelector('.edit-note-input');
+            editInput.focus();
+
+            // 编辑按钮切换为保存按钮
+            const editBtn = li.querySelector('.editBtn');
+            editBtn.textContent = '保存';
+            editBtn.classList.remove('editBtn');
+            editBtn.classList.add('saveEditBtn');
+
+            // 保存编辑的逻辑
+            const saveEditHandler = () => {
+                const newText = editInput.value.trim();
+                const newNote = editNoteInput.value.trim();
+                if (newText) {
+                    task.text = newText;
+                    task.note = newNote;
+                    task.updateTime = new Date().toISOString(); // 更新时间
+                    saveTasks();
+                    loadTasks();
+                }
+            };
+
+            editBtn.addEventListener('click', saveEditHandler);
+
+            // 按回车保存（任务输入框）
+            editInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    saveEditHandler();
+                }
+            });
+
+            // 按Ctrl+Enter保存（备注输入框）
+            editNoteInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && e.ctrlKey) {
+                    e.preventDefault();
+                    saveEditHandler();
+                }
+            });
         });
+
+        // 删除任务事件
+        li.querySelector('.deleteBtn').addEventListener('click', () => {
+            tasks.splice(index, 1);
+            saveTasks();
+            loadTasks();
+        });
+    }
+
+    // 初始化拖拽排序功能（修复版）
+    function initDragAndDrop() {
+        const taskLists = [pendingList, completedList];
+        let draggedItem = null;
+        let currentList = null;
+
+        // 为所有任务项添加拖拽事件
+        document.querySelectorAll('.task-item').forEach(item => {
+            // 拖拽开始
+            item.addEventListener('dragstart', (e) => {
+                draggedItem = item;
+                currentList = item.parentNode; // 记录当前所在列表
+                setTimeout(() => item.classList.add('dragging'), 0);
+                // 设置拖拽数据（用于兼容部分浏览器）
+                e.dataTransfer.setData('text/plain', item.getAttribute('data-index'));
+            });
+
+            // 拖拽结束
+            item.addEventListener('dragend', () => {
+                draggedItem = null;
+                document.querySelectorAll('.task-item').forEach(i => i.classList.remove('dragging'));
+                updateTaskOrder(); // 更新排序
+            });
+        });
+
+        // 为列表添加拖拽目标事件
+        taskLists.forEach(list => {
+            // 允许放置
+            list.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (!draggedItem) return;
+
+                // 找到放置位置的参考元素
+                const afterElement = getDragAfterElement(list, e.clientY);
+                const draggable = draggedItem;
+
+                if (afterElement == null) {
+                    list.appendChild(draggable);
+                } else {
+                    list.insertBefore(draggable, afterElement);
+                }
+            });
+
+            // 处理放置
+            list.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (draggedItem && currentList !== list) {
+                    // 跨列表拖拽时更新任务状态
+                    const index = parseInt(draggedItem.getAttribute('data-index'));
+                    tasks[index].done = list.id === 'completedList';
+                    tasks[index].updateTime = new Date().toISOString();
+                }
+            });
+        });
+
+        // 计算拖拽后应该放置的位置
+        function getDragAfterElement(container, y) {
+            const draggableElements = [...container.querySelectorAll('.task-item:not(.dragging)')];
+
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = y - box.top - box.height / 2;
+
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+    }
+
+    // 更新任务顺序
+    function updateTaskOrder() {
+        const newOrder = [];
+
+        // 收集待办列表任务
+        document.querySelectorAll('#pendingList .task-item').forEach(item => {
+            const index = parseInt(item.getAttribute('data-index'));
+            newOrder.push(tasks[index]);
+        });
+
+        // 收集已完成列表任务
+        document.querySelectorAll('#completedList .task-item').forEach(item => {
+            const index = parseInt(item.getAttribute('data-index'));
+            newOrder.push(tasks[index]);
+        });
+
+        // 更新并保存顺序
+        tasks = newOrder;
+        saveTasks();
     }
 
     // 保存任务到本地存储
     function saveTasks() {
-        const tasks = [];
-        document.querySelectorAll('.task-item').forEach(item => {
-            tasks.push({
-                text: item.querySelector('span').textContent,
-                done: item.classList.contains('done')
-            });
-        });
         localStorage.setItem('todoTasks', JSON.stringify(tasks));
     }
 
     // 添加任务按钮事件
     addBtn.addEventListener('click', () => {
         const text = taskInput.value.trim();
+        const note = noteInput.value.trim();
+
         if (text) {
-            addTaskToDOM(text);
+            // 添加新任务（带当前时间戳）
+            tasks.unshift({
+                text,
+                note,
+                done: false,
+                updateTime: new Date().toISOString()
+            });
+
+            // 清空输入框
             taskInput.value = '';
-            saveTasks(); // 保存到本地存储
+            noteInput.value = '';
+
+            // 保存并重新加载
+            saveTasks();
+            loadTasks();
+
+            // 聚焦到任务输入框
+            taskInput.focus();
         }
     });
 
     // 按回车添加任务
     taskInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') addBtn.click();
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            addBtn.click();
+        }
     });
 
-    // 页面加载时加载任务
+    // 页面加载时初始化
     loadTasks();
 </script>
 </body>
