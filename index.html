@@ -28,6 +28,7 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             padding: 30px;
             margin-top: 30px;
+            position: relative;
         }
 
         h1 {
@@ -337,26 +338,156 @@
         .task-item.done .task-index {
             background-color: #2ecc71; /* 已完成任务序号用绿色 */
         }
+        .add-btn-wrapper {
+            position: absolute; /* 相对于父容器.container定位 */
+            right: 30px; /* 和.container的内边距一致，避免贴边太近 */
+            top: 30px; /* 和.container的内边距一致，和标题对齐 */
+            z-index: 10; /* 确保在容器内上层，不被标题遮挡 */
+        }
+        #addTaskBtn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+            text-align: center;
+        }
+        #addTaskBtn:hover {
+            background-color: #2980b9;
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+        }
+
+        /* 弹窗样式 */
+        .modal {
+            display: none; /* 默认隐藏 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* 半透明遮罩 */
+            z-index: 100;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: #f3efef;
+            padding: 30px;
+            border-radius: 8px;
+            width: 100%;
+            height: 100%;
+            max-width: 700px;
+            max-height: 500px; /* 原400px，适当调高适配大备注框 */
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            display: flex; /* 新增 */
+            flex-direction: column; /* 新增，纵向排列弹窗内容 */
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #e1e4e8;
+            padding-bottom: 10px;
+        }
+        .modal-header h3 {
+            color: #2c3e50;
+            font-size: 18px;
+            margin: 0;
+        }
+        #closeModal {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: color 0.2s ease;
+        }
+        #closeModal:hover {
+            color: #e74c3c;
+        }
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 15px; /* 输入框之间的间距，可保留 */
+            margin-bottom: 10px; /* 原可能是20px，调小后贴近按钮 */
+            flex: 1; /* 新增，让内容区占满弹窗中间空间，进一步拉近距离 */
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .modal-footer button {
+            padding: 8px 16px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        #confirmAdd {
+            background-color: #3498db;
+            color: white;
+        }
+        #confirmAdd:hover {
+            background-color: #2980b9;
+        }
+        #cancelAdd {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+        }
+        #cancelAdd:hover {
+            background-color: #dcdde1;
+        }
+
+        /* 弹窗输入框样式 */
+        #modalTaskInput,
+        #modalNoteInput {
+            padding: 12px 15px;
+            border: 2px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100%;
+        }
+        #modalTaskInput:focus,
+        #modalNoteInput:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+        #modalNoteInput {
+            resize: vertical;
+            min-height: 250px;
+            font-size: 18px;
+        }
+
 
     </style>
 </head>
 <body>
 <div class="container">
     <h1>TodoList</h1>
+    <!-- 右上角添加按钮 -->
+    <div class="add-btn-wrapper">
+        <button id="addTaskBtn">+</button>
+    </div>
 
     <div class="tabs">
         <div class="tab active" data-tab="pending">待办任务</div>
         <div class="tab" data-tab="completed">已完成任务</div>
     </div>
-
     <div class="tab-content active" id="pending">
-        <div class="add-task-container">
-            <div class="task-main-input">
-                <input type="text" id="taskInput" placeholder="输入任务...">
-                <button id="addBtn">添加任务</button>
-            </div>
-            <textarea id="noteInput" placeholder="添加备注（可选）..."></textarea>
-        </div>
         <ul class="task-list" id="pendingList"></ul>
     </div>
 
@@ -365,11 +496,38 @@
     </div>
 </div>
 
+
+
+<!-- 添加任务弹窗 -->
+<div class="modal" id="addTaskModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>添加新任务</h3>
+            <button id="closeModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="text" id="modalTaskInput" placeholder="输入任务内容...">
+            <textarea id="modalNoteInput" placeholder="添加备注（可选）..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button id="cancelAdd">取消</button>
+            <button id="confirmAdd">确认添加</button>
+        </div>
+    </div>
+</div>
+
 <script>
     // 获取DOM元素
-    const taskInput = document.getElementById('taskInput');
-    const noteInput = document.getElementById('noteInput');
-    const addBtn = document.getElementById('addBtn');
+    // const taskInput = document.getElementById('taskInput');
+    // const noteInput = document.getElementById('noteInput');
+    // const addBtn = document.getElementById('addBtn');
+    const addTaskBtn = document.getElementById('addTaskBtn');
+    const addTaskModal = document.getElementById('addTaskModal');
+    const closeModal = document.getElementById('closeModal');
+    const confirmAdd = document.getElementById('confirmAdd');
+    const cancelAdd = document.getElementById('cancelAdd');
+    const modalTaskInput = document.getElementById('modalTaskInput');
+    const modalNoteInput = document.getElementById('modalNoteInput');
     const pendingList = document.getElementById('pendingList');
     const completedList = document.getElementById('completedList');
     const tabs = document.querySelectorAll('.tab');
@@ -458,7 +616,9 @@
         // 构建任务HTML（包含备注和更新时间）
         let noteHtml = '';
         if (task.note) {
-            noteHtml = `<div class="task-note"> ${task.note.replace(/\n/g, '<br>')}</div>`;
+            // 关键：将换行符\n替换为HTML换行标签<br>
+            const noteWithBr = task.note.replace(/\n/g, '<br>');
+            noteHtml = `<div class="task-note"> ${noteWithBr}</div>`;
         }
 
         li.innerHTML = `
@@ -499,8 +659,11 @@
             const taskTextElement = li.querySelector('.task-text');
             const currentText = taskTextElement.textContent;
             const noteElement = li.querySelector('.task-note');
-            const currentNote = noteElement ? noteElement.textContent.replace('📝 ', '').replace(/<br>/g, '\n') : '';
-
+            // 关键：读取时把<br>转回\n，确保输入框正常显示换行
+            const currentNote = noteElement
+                ? noteElement.innerHTML.replace('📝 ', '').replace(/<br>/g, '\n')
+                : '';
+            // 后续创建编辑框的代码保持不变...
             // 替换为任务输入框
             taskTextElement.innerHTML = `<input type="text" class="edit-input" value="${currentText}">`;
             // 替换为备注输入框
@@ -525,10 +688,10 @@
             // 保存编辑的逻辑
             const saveEditHandler = () => {
                 const newText = editInput.value.trim();
-                const newNote = editNoteInput.value.trim();
+                const newNote = editNoteInput.value.trim(); // 这里会保留输入框里的\n换行符
                 if (newText) {
                     task.text = newText;
-                    task.note = newNote;
+                    task.note = newNote; // 原样存入数组，保留\n
                     task.updateTime = new Date().toISOString();
                     saveTasks();
                     loadTasks();
@@ -662,41 +825,89 @@
     }
 
     // 添加任务按钮事件
-    addBtn.addEventListener('click', () => {
-        const text = taskInput.value.trim();
-        const note = noteInput.value.trim();
+    // addBtn.addEventListener('click', () => {
+    //     const text = taskInput.value.trim();
+    //     const note = noteInput.value.trim();
+    //
+    //     if (text) {
+    //         // 把 unshift 改成 push，新任务添加到数组末尾（待办列表最后）
+    //         tasks.push({
+    //             text,
+    //             note,
+    //             done: false,
+    //             updateTime: new Date().toISOString()
+    //         });
+    //
+    //         // 清空输入框
+    //         taskInput.value = '';
+    //         noteInput.value = '';
+    //
+    //         // 保存并重新加载
+    //         saveTasks();
+    //         loadTasks();
+    //
+    //         // 聚焦到任务输入框
+    //         taskInput.focus();
+    //     }
+    // });
 
+    // 按回车添加任务
+    // taskInput.addEventListener('keypress', (e) => {
+    //     if (e.key === 'Enter' && !e.shiftKey) {
+    //         e.preventDefault();
+    //         addBtn.click();
+    //     }
+    // });
+
+    // 页面加载时初始化
+
+    // 打开弹窗
+    addTaskBtn.addEventListener('click', () => {
+        addTaskModal.style.display = 'flex';
+        modalTaskInput.focus(); // 聚焦到输入框
+    });
+
+    // 关闭弹窗的通用函数
+    function hideModal() {
+        addTaskModal.style.display = 'none';
+        modalTaskInput.value = ''; // 清空输入框
+        modalNoteInput.value = '';
+    }
+
+    // 点击关闭按钮、取消按钮、遮罩层，都关闭弹窗
+    closeModal.addEventListener('click', hideModal);
+    cancelAdd.addEventListener('click', hideModal);
+    addTaskModal.addEventListener('click', (e) => {
+        if (e.target === addTaskModal) hideModal();
+    });
+
+    // 确认添加任务
+    confirmAdd.addEventListener('click', () => {
+        const text = modalTaskInput.value.trim();
+        const note = modalNoteInput.value.trim(); // 保留\n换行符
         if (text) {
-            // 把 unshift 改成 push，新任务添加到数组末尾（待办列表最后）
             tasks.push({
                 text,
-                note,
+                note, // 原样存入，保留换行
                 done: false,
                 updateTime: new Date().toISOString()
             });
-
-            // 清空输入框
-            taskInput.value = '';
-            noteInput.value = '';
-
-            // 保存并重新加载
             saveTasks();
             loadTasks();
-
-            // 聚焦到任务输入框
-            taskInput.focus();
+            hideModal();
+        } else {
+            alert('请输入任务内容！');
         }
     });
 
-    // 按回车添加任务
-    taskInput.addEventListener('keypress', (e) => {
+    // 弹窗内按回车添加任务
+    modalTaskInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            addBtn.click();
+            confirmAdd.click();
         }
     });
 
-    // 页面加载时初始化
     loadTasks();
 </script>
 </body>
