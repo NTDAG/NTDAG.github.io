@@ -16,12 +16,9 @@
             max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
-            /* 主背景色，浅蓝灰色，可替换为自己喜欢的颜色 */
             background-color: #0f556c;
-            /* 可选：添加轻微渐变，让背景不单调 */
             background-image: linear-gradient(120deg, #f0f8fb 0%, #f0f3f4 100%);
             color: #333;
-            /* 让背景占满整个屏幕高度 */
             min-height: 100vh;
         }
 
@@ -54,7 +51,6 @@
             border-radius: 3px;
         }
 
-        /* 标签页样式 */
         .tabs {
             display: flex;
             border-bottom: 1px solid #e1e4e8;
@@ -89,7 +85,6 @@
             display: block;
         }
 
-        /* 添加任务区域 */
         .add-task-container {
             display: flex;
             flex-direction: column;
@@ -159,7 +154,6 @@
             transform: translateY(0);
         }
 
-        /* 任务列表样式 */
         .task-list {
             list-style: none;
             padding: 0;
@@ -172,13 +166,12 @@
             margin: 10px 0;
             background: white;
             border-radius: 8px;
-            border-left: 4px solid #3498db;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
             display: flex;
             flex-direction: column;
             gap: 10px;
             transition: all 0.3s ease;
-            cursor: grab;
+            cursor: pointer; /* 平时显示清晰的指针光标 */
             position: relative;
         }
 
@@ -186,7 +179,7 @@
             opacity: 0.7;
             transform: scale(1.02);
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            cursor: grabbing;
+            cursor: move; /* 拖拽中显示移动光标 */
             border-left-color: #9b59b6;
         }
 
@@ -197,6 +190,10 @@
         .task-item.done {
             border-left-color: #2ecc71;
             opacity: 0.85;
+        }
+        /* 点击拖拽瞬间保持移动光标 */
+        .task-item:active {
+            cursor: move;
         }
 
         .task-header {
@@ -264,16 +261,23 @@
 
         .task-note {
             padding: 10px;
-            background-color: #f8f9fa;
+            background-color: #f0f3f4;
             border-radius: 4px;
             font-size: 14px;
             color: #555;
-            border-left: 2px solid #bdc3c7;
+            /* 加深边框颜色并增加宽度 */
+            border-left: 2px solid #95a5a6;
+            border-right: 2px solid #95a5a6;
+            border-top: 2px solid #95a5a6;
+            border-bottom: 2px solid #95a5a6;
+            /* 可选：添加轻微阴影增强立体感 */
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             margin-top: 5px;
             white-space: pre-line;
+            /* 可选：增加内边距让内容与边框有更多距离 */
+            padding-left: 12px;
         }
 
-        /* 更新时间样式 */
         .update-time {
             font-size: 12px;
             color: #95a5a6;
@@ -316,19 +320,35 @@
             margin-bottom: 15px;
             color: #bdc3c7;
         }
+        /* 序号图标样式 */
+        .task-index {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            border-radius: 4px; /* 圆形，改成8px就是方形 */
+            background-color: #cc4471; /* 和添加按钮同色，保持风格统一 */
+            color: white;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px; /* 与任务名称的间距 */
+        }
+        .task-item.done .task-index {
+            background-color: #2ecc71; /* 已完成任务序号用绿色 */
+        }
+
     </style>
 </head>
 <body>
 <div class="container">
     <h1>TodoList</h1>
 
-    <!-- 标签页切换 -->
     <div class="tabs">
         <div class="tab active" data-tab="pending">待办任务</div>
         <div class="tab" data-tab="completed">已完成任务</div>
     </div>
 
-    <!-- 待办任务内容 -->
     <div class="tab-content active" id="pending">
         <div class="add-task-container">
             <div class="task-main-input">
@@ -340,7 +360,6 @@
         <ul class="task-list" id="pendingList"></ul>
     </div>
 
-    <!-- 已完成任务内容 -->
     <div class="tab-content" id="completed">
         <ul class="task-list" id="completedList"></ul>
     </div>
@@ -356,23 +375,19 @@
     const tabs = document.querySelectorAll('.tab');
     const tabContents = document.querySelectorAll('.tab-content');
 
-    // 初始化任务列表，添加更新时间字段（兼容旧数据）
+    // 初始化任务列表
     let tasks = JSON.parse(localStorage.getItem('todoTasks') || '[]');
+    // 兼容旧数据，添加updateTime字段（仅用于显示）
     tasks = tasks.map(task => ({
         ...task,
         updateTime: task.updateTime || new Date().toISOString()
     }));
-    saveTasks(); // 保存补全字段后的任务
+    saveTasks();
 
-    // 格式化时间为 年-月-日 时:分
+    // 格式化时间为 年-月-日 时:分（仅用于显示）
     function formatTime(timeStr) {
         const date = new Date(timeStr);
         return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')} ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-    }
-
-    // 按更新时间降序排序（最新的任务在最前面）
-    function sortTasksByUpdateTime() {
-        tasks.sort((a, b) => new Date(b.updateTime) - new Date(a.updateTime));
     }
 
     // 标签页切换功能
@@ -386,18 +401,28 @@
         });
     });
 
-    // 从本地存储加载任务
+    // 加载任务，按当前数组顺序渲染（用户拖拽后的顺序）
     function loadTasks() {
-        sortTasksByUpdateTime(); // 加载前先排序
         pendingList.innerHTML = '';
         completedList.innerHTML = '';
+        let pendingIndex = 1; // 待办列表独立序号计数器
+        let completedIndex = 1; // 已完成列表独立序号计数器
 
+        // 遍历任务，按状态分配到对应列表并单独计数
         tasks.forEach((task, index) => {
-            addTaskToDOM(task, index);
+            let currentIndex;
+            // 按任务状态确定使用哪个序号
+            if (task.done) {
+                currentIndex = completedIndex;
+                completedIndex++;
+            } else {
+                currentIndex = pendingIndex;
+                pendingIndex++;
+            }
+            addTaskToDOM(task, index, currentIndex); // 传入对应列表的序号
         });
-
         checkEmptyState();
-        initDragAndDrop(); // 初始化拖拽
+        initDragAndDrop(); // 初始化拖拽功能
     }
 
     // 检查空状态并显示提示
@@ -424,7 +449,7 @@
     }
 
     // 添加任务到页面
-    function addTaskToDOM(task, index) {
+    function addTaskToDOM(task, index, taskNum) {
         const li = document.createElement('li');
         li.className = `task-item ${task.done ? 'done' : ''}`;
         li.setAttribute('data-index', index);
@@ -433,20 +458,25 @@
         // 构建任务HTML（包含备注和更新时间）
         let noteHtml = '';
         if (task.note) {
-            noteHtml = `<div class="task-note">📝 ${task.note.replace(/\n/g, '<br>')}</div>`;
+            noteHtml = `<div class="task-note"> ${task.note.replace(/\n/g, '<br>')}</div>`;
         }
 
         li.innerHTML = `
-            <div class="task-header">
-                <span class="task-text">${task.text}</span>
-                <div class="task-actions">
-                    <button class="toggleBtn">${task.done ? '取消完成' : '完成'}</button>
-                    <button class="editBtn">编辑</button>
-                    <button class="deleteBtn">删除</button>
-                </div>
+        <div class="task-header">
+            <!-- 把纯文本序号改成带.task-index类的图标容器 -->
+            <span class="task-text">
+                <strong>
+                    <span class="task-index">${taskNum}</span>${task.text}
+                </strong>
+            </span>
+            <div class="task-actions">
+                <button class="toggleBtn">${task.done ? '取消完成' : '完成'}</button>
+                <button class="editBtn">编辑</button>
+                <button class="deleteBtn">删除</button>
             </div>
-            ${noteHtml}
-            <div class="update-time">更新于: ${formatTime(task.updateTime)}</div>
+        </div>
+        ${noteHtml}
+        <div class="update-time">更新于: ${formatTime(task.updateTime)}</div>
         `;
 
         // 根据任务状态添加到对应列表
@@ -459,9 +489,9 @@
         // 完成/取消完成事件
         li.querySelector('.toggleBtn').addEventListener('click', () => {
             task.done = !task.done;
-            task.updateTime = new Date().toISOString(); // 更新操作时间
+            task.updateTime = new Date().toISOString();
             saveTasks();
-            loadTasks();
+            loadTasks(); // 重新渲染时，已完成任务按数组顺序排在最后
         });
 
         // 编辑任务事件
@@ -499,7 +529,7 @@
                 if (newText) {
                     task.text = newText;
                     task.note = newNote;
-                    task.updateTime = new Date().toISOString(); // 更新时间
+                    task.updateTime = new Date().toISOString();
                     saveTasks();
                     loadTasks();
                 }
@@ -507,7 +537,7 @@
 
             editBtn.addEventListener('click', saveEditHandler);
 
-            // 按回车保存（任务输入框）
+            // 任务输入框按回车保存
             editInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -515,7 +545,7 @@
                 }
             });
 
-            // 按Ctrl+Enter保存（备注输入框）
+            // 备注输入框按Ctrl+Enter保存
             editNoteInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter' && e.ctrlKey) {
                     e.preventDefault();
@@ -532,7 +562,8 @@
         });
     }
 
-    // 初始化拖拽排序功能（修复版）
+    // 初始化拖拽排序功能
+    // 初始化拖拽排序功能
     function initDragAndDrop() {
         const taskLists = [pendingList, completedList];
         let draggedItem = null;
@@ -545,7 +576,6 @@
                 draggedItem = item;
                 currentList = item.parentNode; // 记录当前所在列表
                 setTimeout(() => item.classList.add('dragging'), 0);
-                // 设置拖拽数据（用于兼容部分浏览器）
                 e.dataTransfer.setData('text/plain', item.getAttribute('data-index'));
             });
 
@@ -553,7 +583,8 @@
             item.addEventListener('dragend', () => {
                 draggedItem = null;
                 document.querySelectorAll('.task-item').forEach(i => i.classList.remove('dragging'));
-                updateTaskOrder(); // 更新排序
+                updateTaskOrder(); // 拖拽结束后更新任务顺序
+                loadTasks(); // 重新渲染页面，刷新序号
             });
         });
 
@@ -604,23 +635,23 @@
         }
     }
 
-    // 更新任务顺序
+    // 更新任务顺序（核心：完全按照用户拖拽后的视觉顺序保存）
     function updateTaskOrder() {
         const newOrder = [];
 
-        // 收集待办列表任务
+        // 先收集待办列表的任务（按视觉顺序）
         document.querySelectorAll('#pendingList .task-item').forEach(item => {
             const index = parseInt(item.getAttribute('data-index'));
             newOrder.push(tasks[index]);
         });
 
-        // 收集已完成列表任务
+        // 再收集已完成列表的任务（按视觉顺序）
         document.querySelectorAll('#completedList .task-item').forEach(item => {
             const index = parseInt(item.getAttribute('data-index'));
             newOrder.push(tasks[index]);
         });
 
-        // 更新并保存顺序
+        // 用新顺序替换原任务数组
         tasks = newOrder;
         saveTasks();
     }
@@ -636,8 +667,8 @@
         const note = noteInput.value.trim();
 
         if (text) {
-            // 添加新任务（带当前时间戳）
-            tasks.unshift({
+            // 把 unshift 改成 push，新任务添加到数组末尾（待办列表最后）
+            tasks.push({
                 text,
                 note,
                 done: false,
