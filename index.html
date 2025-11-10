@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的 TodoList</title>
+    <title>TodoList</title>
     <style>
         * {
             margin: 0;
@@ -27,10 +27,14 @@
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             padding: 30px;
-            margin-top: 30px;
+            margin-top: 20px;
             position: relative;
+            /* 新增缩放和居中相关属性 */
+            transform: scale(0.82); /* 整体缩小到80% */
+            transform-origin: top center; /* 缩放原点设为顶部居中，避免偏移 */
+            margin: 30px auto 0; /* 保持水平居中 */
+            width: 100%; /* 确保容器宽度适配缩放 */
         }
-
         h1 {
             text-align: center;
             color: #2c3e50;
@@ -380,6 +384,7 @@
             align-items: center;
             justify-content: center;
         }
+        /* 弹窗样式同步缩放 */
         .modal-content {
             background-color: #f3efef;
             padding: 30px;
@@ -387,10 +392,13 @@
             width: 100%;
             height: 100%;
             max-width: 700px;
-            max-height: 500px; /* 原400px，适当调高适配大备注框 */
+            max-height: 500px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            display: flex; /* 新增 */
-            flex-direction: column; /* 新增，纵向排列弹窗内容 */
+            display: flex;
+            flex-direction: column;
+            /* 新增缩放，与主界面保持一致 */
+            transform: scale(0.82);
+            transform-origin: center; /* 弹窗缩放原点设为中心 */
         }
         .modal-header {
             display: flex;
