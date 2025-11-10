@@ -472,6 +472,60 @@
             font-size: 18px;
         }
 
+        /* 编辑任务弹窗按钮样式 */
+        #confirmEdit {
+            background-color: #f39c12; /* 编辑按钮用橙色，与添加按钮区分 */
+            color: white;
+        }
+        #confirmEdit:hover {
+            background-color: #e67e22;
+        }
+        #cancelEdit {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+        }
+        #cancelEdit:hover {
+            background-color: #dcdde1;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px; /* 调大字号，让×更清晰 */
+            cursor: pointer;
+            color: #7f8c8d;
+            transition: color 0.2s ease;
+            padding: 0 5px; /* 增加点击区域 */
+        }
+        .modal-close:hover {
+            color: #e74c3c; /*  hover时变红，提升交互感 */
+        }
+
+        /* 👇 补全输入框样式，作用于编辑弹窗的两个输入框 */
+        .modal-input,
+        .modal-textarea {
+            padding: 12px 15px;
+            border: 2px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 16px;
+            width: 100%;
+            transition: all 0.3s ease; /* 增加过渡效果，提升交互 */
+        }
+        /* 输入框聚焦样式 */
+        .modal-input:focus,
+        .modal-textarea:focus {
+            outline: none;
+            border-color: #3498db; /* 聚焦时变蓝色边框 */
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1); /* 轻微发光效果 */
+        }
+        /* 备注文本域单独样式 */
+        .modal-textarea {
+            resize: vertical;
+            min-height: 250px;
+            font-size: 18px;
+            line-height: 1.5; /* 行高优化，方便阅读长备注 */
+        }
+
 
     </style>
 </head>
@@ -516,6 +570,26 @@
     </div>
 </div>
 
+<!-- 编辑任务弹窗 -->
+<div class="modal" id="editTaskModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>编辑任务</h3>
+            <button class="modal-close" id="closeEditModal">&times;</button>
+        </div>
+        <div class="modal-body">
+            <input type="text" class="modal-input" id="modalEditTaskInput" placeholder="输入任务内容...">
+            <textarea class="modal-textarea" id="modalEditNoteInput" placeholder="添加备注（可选）..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button id="cancelEdit">取消</button>
+            <button id="confirmEdit">确认修改</button>
+        </div>
+    </div>
+</div>
+
+
+
 <script>
     // 获取DOM元素
     // const taskInput = document.getElementById('taskInput');
@@ -532,6 +606,17 @@
     const completedList = document.getElementById('completedList');
     const tabs = document.querySelectorAll('.tab');
     const tabContents = document.querySelectorAll('.tab-content');
+
+    // 编辑弹窗相关元素
+    const editTaskModal = document.getElementById('editTaskModal');
+    const closeEditModal = document.getElementById('closeEditModal');
+    const confirmEdit = document.getElementById('confirmEdit');
+    const cancelEdit = document.getElementById('cancelEdit');
+    const modalEditTaskInput = document.getElementById('modalEditTaskInput');
+    const modalEditNoteInput = document.getElementById('modalEditNoteInput');
+
+    // 存储当前编辑的任务索引（关键变量）
+    let currentEditIndex = -1;
 
     // 初始化任务列表
     let tasks = JSON.parse(localStorage.getItem('todoTasks') || '[]');
@@ -656,65 +741,15 @@
 
         // 编辑任务事件
         li.querySelector('.editBtn').addEventListener('click', () => {
-            const taskTextElement = li.querySelector('.task-text');
-            const currentText = taskTextElement.textContent;
-            const noteElement = li.querySelector('.task-note');
-            // 关键：读取时把<br>转回\n，确保输入框正常显示换行
-            const currentNote = noteElement
-                ? noteElement.innerHTML.replace('📝 ', '').replace(/<br>/g, '\n')
-                : '';
-            // 后续创建编辑框的代码保持不变...
-            // 替换为任务输入框
-            taskTextElement.innerHTML = `<input type="text" class="edit-input" value="${currentText}">`;
-            // 替换为备注输入框
-            if (noteElement) {
-                noteElement.innerHTML = `<textarea class="edit-note-input">${currentNote}</textarea>`;
-            } else {
-                const noteEditContainer = document.createElement('div');
-                noteEditContainer.innerHTML = `<textarea class="edit-note-input" placeholder="添加备注...">${currentNote}</textarea>`;
-                li.insertBefore(noteEditContainer, li.querySelector('.update-time'));
-            }
-
-            const editInput = li.querySelector('.edit-input');
-            const editNoteInput = li.querySelector('.edit-note-input');
-            editInput.focus();
-
-            // 编辑按钮切换为保存按钮
-            const editBtn = li.querySelector('.editBtn');
-            editBtn.textContent = '保存';
-            editBtn.classList.remove('editBtn');
-            editBtn.classList.add('saveEditBtn');
-
-            // 保存编辑的逻辑
-            const saveEditHandler = () => {
-                const newText = editInput.value.trim();
-                const newNote = editNoteInput.value.trim(); // 这里会保留输入框里的\n换行符
-                if (newText) {
-                    task.text = newText;
-                    task.note = newNote; // 原样存入数组，保留\n
-                    task.updateTime = new Date().toISOString();
-                    saveTasks();
-                    loadTasks();
-                }
-            };
-
-            editBtn.addEventListener('click', saveEditHandler);
-
-            // 任务输入框按回车保存
-            editInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    saveEditHandler();
-                }
-            });
-
-            // 备注输入框按Ctrl+Enter保存
-            editNoteInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && e.ctrlKey) {
-                    e.preventDefault();
-                    saveEditHandler();
-                }
-            });
+            // 记录当前编辑的任务索引（关键：用index关联任务数据）
+            currentEditIndex = index;
+            // 加载任务数据到编辑弹窗
+            modalEditTaskInput.value = task.text; // 显示任务内容
+            modalEditNoteInput.value = task.note || ''; // 显示备注（若无则为空）
+            // 打开编辑弹窗
+            editTaskModal.style.display = 'flex';
+            // 聚焦到任务输入框，方便直接编辑
+            modalEditTaskInput.focus();
         });
 
         // 删除任务事件
@@ -881,6 +916,21 @@
         if (e.target === addTaskModal) hideModal();
     });
 
+    // 关闭编辑弹窗的通用函数
+    function hideEditModal() {
+        editTaskModal.style.display = 'none';
+        currentEditIndex = -1; // 重置编辑索引（避免错误）
+    }
+
+    // 编辑弹窗关闭按钮事件
+    closeEditModal.addEventListener('click', hideEditModal);
+    // 编辑弹窗取消按钮事件
+    cancelEdit.addEventListener('click', hideEditModal);
+    // 点击编辑弹窗外部关闭
+    editTaskModal.addEventListener('click', (e) => {
+        if (e.target === editTaskModal) hideEditModal();
+    });
+
     // 确认添加任务
     confirmAdd.addEventListener('click', () => {
         const text = modalTaskInput.value.trim();
@@ -897,6 +947,43 @@
             hideModal();
         } else {
             alert('请输入任务内容！');
+        }
+    });
+
+    // 编辑任务：确认修改按钮事件
+    confirmEdit.addEventListener('click', () => {
+        // 验证任务内容不为空
+        const newText = modalEditTaskInput.value.trim();
+        if (!newText) {
+            alert('任务内容不能为空！');
+            return;
+        }
+        // 获取新的备注内容（保留换行符）
+        const newNote = modalEditNoteInput.value.trim();
+        // 更新任务数据（通过currentEditIndex定位到具体任务）
+        tasks[currentEditIndex].text = newText;
+        tasks[currentEditIndex].note = newNote;
+        tasks[currentEditIndex].updateTime = new Date().toISOString(); // 更新时间戳
+        // 保存到本地存储并刷新列表
+        saveTasks();
+        loadTasks();
+        // 关闭编辑弹窗
+        hideEditModal();
+    });
+
+    // 编辑任务：按Enter保存（任务输入框）
+    modalEditTaskInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault(); // 阻止默认换行
+            confirmEdit.click(); // 触发保存
+        }
+    });
+
+    // 编辑任务：按Ctrl+Enter保存（备注输入框）
+    modalEditNoteInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && e.ctrlKey) {
+            e.preventDefault(); // 阻止默认换行
+            confirmEdit.click(); // 触发保存
         }
     });
 
