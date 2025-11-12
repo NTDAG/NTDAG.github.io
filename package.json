@@ -1,0 +1,37 @@
+{
+  "name": "NTDAG.github.io",
+  "version": "1.0.0",
+  "description": "我的待办",
+  "main": "index.js",
+  "scripts": {
+    "start": "npx electron .",
+    "dist": "electron-builder"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NTDAG/NTDAG.github.io.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NTDAG/NTDAG.github.io/issues"
+  },
+  "homepage": "https://github.com/NTDAG/NTDAG.github.io#readme",
+  "build": {
+    "appId": "com.username.todolist",
+    "productName": "todoList",
+    "win": {
+      "target": "nsis",
+      "icon": "icon.jpg"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "NTDAG",
+      "repo": "NTDAG.github.io"
+    }
+  },
+  "devDependencies": {
+    "electron-builder": "^26.0.12"
+  }
+}
