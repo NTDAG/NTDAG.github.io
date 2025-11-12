@@ -23,7 +23,7 @@
     "productName": "todoList",
     "win": {
       "target": "nsis",
-      "icon": "icon.jpg"
+      "icon": "icon.ico"
     },
     "publish": {
       "provider": "github",
