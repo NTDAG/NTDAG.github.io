@@ -26,6 +26,9 @@
       "icon": "icon.ico"
     },
     "electronVersion": "39.1.2",
+    "electronDownload": {
+      "cache": "E:\\Java\\personal\\NTDAG.github.io\\node_modules\\electron"
+    },
     "publish": {
       "provider": "github",
       "owner": "NTDAG",
@@ -36,5 +39,8 @@
     "electron": "^39.1.2",
     "electron-builder": "^26.0.12",
     "electron-updater": "^6.6.2"
+  },
+  "dependencies": {
+    "string-width": "^4.2.0"
   }
 }
