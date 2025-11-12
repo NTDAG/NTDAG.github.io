@@ -11,7 +11,6 @@ function createWindow() {
         frame: false, // 去掉边框
         transparent: true, // 使窗口透明
         alwaysOnTop: true, // 保证窗口始终在最前面
-        icon: path.join(__dirname, 'icon.ico'),
         webPreferences: {
             nodeIntegration: true, // 允许在渲染进程中使用 Node.js
         },

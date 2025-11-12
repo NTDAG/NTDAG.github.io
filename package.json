@@ -22,8 +22,7 @@
     "appId": "com.username.todolist",
     "productName": "todoList",
     "win": {
-      "target": "nsis",
-      "icon": "icon.ico"
+      "target": "nsis"
     },
     "electronVersion": "39.1.2",
     "electronDownload": {
