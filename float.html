@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <!-- 关键：禁用页面缩放 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        /* 1. 重置所有默认样式，防止意外边距和内边距 */
+        * {
+            margin: 0;
+            padding: 0;
+            border: none;
+            box-sizing: border-box;
+        }
+
+        /* 2. 强制 body 大小为固定像素，与窗口大小完全一致 */
+        body {
+            width: 80px;
+            height: 80px;
+            overflow: hidden; /* 隐藏任何超出 body 的内容 */
+        }
+
+        /* 3. 强制图片大小为固定像素，并禁用所有变换 */
+        #float-icon {
+            /* 固定尺寸，不使用百分比 */
+            width: 80px !important;
+            height: 80px !important;
+
+            /* 确保图片不变形 */
+            object-fit: cover;
+
+            /* 禁止所有缩放、旋转等变换 */
+            transform: none !important;
+            transition: none !important; /* 禁用所有过渡动画 */
+
+            /* 其他样式 */
+            border-radius: 50%;
+            cursor: move;
+            user-select: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+<img id="float-icon" src="./assets/icon.jpg" alt="Todo List">
+<script src="./float.js"></script>
+</body>
+</html>
