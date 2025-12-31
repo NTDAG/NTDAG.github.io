@@ -944,7 +944,7 @@
         const text = modalTaskInput.value.trim();
         const note = modalNoteInput.value.trim(); // 保留\n换行符
         if (text) {
-            tasks.push({
+            tasks.unshift({
                 text,
                 note, // 原样存入，保留换行
                 done: false,
