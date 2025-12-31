@@ -20,8 +20,8 @@
         }
 
         #float-icon {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             object-fit: cover;
             border-radius: 50%;
             cursor: move;
@@ -36,17 +36,41 @@
             transform: translate(-50%, -50%);
         }
 
-        /*
-         * 使用 ID 选择器，优先级更高，确保样式会被应用
-         * 当 body 同时拥有 'snapped' 和 'snapped-right' 类时生效
-         */
+        /* 模仿右侧样式，实现左侧吸附效果（优先级一致） */
+        body#float-body.snapped.snapped-left #float-icon {
+            /* 和右侧一致的缩小尺寸，保持视觉统一 */
+            width: 60px !important;
+            height: 60px !important;
+            border-radius: 15px !important; /* 钝角矩形，和右侧一致 */
+            /* 向左平移 (100px - 60px)/2 = 20px，实现贴左边缘视觉效果 */
+            transform: translate(calc(-50% - 20px), -50%);
+        }
+
+        /* 右侧吸附样式（保留你原有代码，未做修改） */
         body#float-body.snapped.snapped-right #float-icon {
-            /* 强制缩小尺寸 */
             width: 60px !important;
             height: 60px !important;
             border-radius: 15px !important;
-            /* 向右平移 (100px - 60px) / 2 = 20px，使其看起来贴边 */
+            /* 向右平移 20px，贴右边缘 */
             transform: translate(calc(-50% + 20px), -50%);
+        }
+
+        /* 顶部吸附样式（模仿右侧写法，适配顶部贴边） */
+        body#float-body.snapped.snapped-top #float-icon {
+            width: 60px !important;
+            height: 60px !important;
+            border-radius: 15px !important;
+            /* 向上平移 20px，贴顶边缘 */
+            transform: translate(-50%, calc(-50% - 20px));
+        }
+
+        /* 底部吸附样式（模仿右侧写法，适配底部贴边） */
+        body#float-body.snapped.snapped-bottom #float-icon {
+            width: 60px !important;
+            height: 60px !important;
+            border-radius: 15px !important;
+            /* 向下平移 20px，贴底边缘 */
+            transform: translate(-50%, calc(-50% + 20px));
         }
     </style>
 </head>

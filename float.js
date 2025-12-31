@@ -20,7 +20,7 @@ floatIcon.addEventListener('mousedown', (e) => {
     }
 });
 
-// 鼠标移动时更新窗口位置
+// 鼠标移动时更新窗口位置（扩展为四周边缘吸附，保留原有逻辑结构）
 function onMouseMove(e) {
     if (!isDragging) return;
 
@@ -32,16 +32,41 @@ function onMouseMove(e) {
     const screenWidth = window.screen.availWidth;
     const screenHeight = window.screen.availHeight;
 
-    // --- 核心吸附判断 ---
-    const isSnappedToRight = targetX > screenWidth - windowWidth - snapDistance;
+    // --- 核心吸附判断：从仅右侧扩展为左、右、上、下四侧 ---
+    // 先重置所有吸附类名（避免多边缘类名残留）
+    body.classList.remove('snapped', 'snapped-right', 'snapped-left', 'snapped-top', 'snapped-bottom');
 
-    if (isSnappedToRight) {
+    let isSnapped = false; // 标记是否触发任意边缘吸附
+
+    // 右侧吸附（保留原有逻辑）
+    if (targetX > screenWidth - windowWidth - snapDistance) {
         targetX = screenWidth - windowWidth;
-        // 确保两个类都被添加
         body.classList.add('snapped', 'snapped-right');
-    } else {
-        // 确保两个类都被移除
-        body.classList.remove('snapped', 'snapped-right');
+        isSnapped = true;
+    }
+    // 左侧吸附（新增，与右侧逻辑对称）
+    else if (targetX < snapDistance) {
+        targetX = 0;
+        body.classList.add('snapped', 'snapped-left');
+        isSnapped = true;
+    }
+
+    // 顶部吸附（新增）
+    if (targetY < snapDistance) {
+        targetY = 0;
+        body.classList.add('snapped', 'snapped-top');
+        isSnapped = true;
+    }
+    // 底部吸附（新增，与顶部逻辑对称）
+    else if (targetY > screenHeight - windowHeight - snapDistance) {
+        targetY = screenHeight - windowHeight;
+        body.classList.add('snapped', 'snapped-bottom');
+        isSnapped = true;
+    }
+
+    // 若未触发任何吸附，确保移除所有吸附类名（兜底）
+    if (!isSnapped) {
+        body.classList.remove('snapped', 'snapped-right', 'snapped-left', 'snapped-top', 'snapped-bottom');
     }
 
     // 发送位置更新到主进程
