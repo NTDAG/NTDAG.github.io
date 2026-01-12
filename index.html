@@ -29,16 +29,15 @@
             padding: 30px;
             margin-top: 20px;
             position: relative;
-            /* 新增缩放和居中相关属性 */
-            transform: scale(0.82); /* 整体缩小到80% */
-            transform-origin: top center; /* 缩放原点设为顶部居中，避免偏移 */
-            margin: 30px auto 0; /* 保持水平居中 */
-            width: 100%; /* 确保容器宽度适配缩放 */
+            transform: scale(0.82);
+            transform-origin: top center;
+            margin: 30px auto 0;
+            width: 100%;
         }
         h1 {
             text-align: center;
             color: #2c3e50;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             font-weight: 600;
             position: relative;
             padding-bottom: 15px;
@@ -54,6 +53,25 @@
             height: 3px;
             background-color: #3498db;
             border-radius: 3px;
+        }
+        /* 新增：搜索框样式 完全适配原有风格 */
+        .search-container {
+            width: 100%;
+            margin: 0 0 25px 0;
+        }
+        #searchInput {
+            width: 100%;
+            padding: 12px 18px;
+            border: 2px solid #e1e4e8;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        #searchInput:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
 
         .tabs {
@@ -176,7 +194,7 @@
             flex-direction: column;
             gap: 10px;
             transition: all 0.3s ease;
-            cursor: pointer; /* 平时显示清晰的指针光标 */
+            cursor: pointer;
             position: relative;
         }
 
@@ -184,7 +202,7 @@
             opacity: 0.7;
             transform: scale(1.02);
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            cursor: move; /* 拖拽中显示移动光标 */
+            cursor: move;
             border-left-color: #9b59b6;
         }
 
@@ -196,7 +214,6 @@
             border-left-color: #2ecc71;
             opacity: 0.85;
         }
-        /* 点击拖拽瞬间保持移动光标 */
         .task-item:active {
             cursor: move;
         }
@@ -270,16 +287,13 @@
             border-radius: 4px;
             font-size: 14px;
             color: #555;
-            /* 加深边框颜色并增加宽度 */
             border-left: 2px solid #95a5a6;
             border-right: 2px solid #95a5a6;
             border-top: 2px solid #95a5a6;
             border-bottom: 2px solid #95a5a6;
-            /* 可选：添加轻微阴影增强立体感 */
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             margin-top: 5px;
             white-space: pre-line;
-            /* 可选：增加内边距让内容与边框有更多距离 */
             padding-left: 12px;
         }
 
@@ -325,28 +339,27 @@
             margin-bottom: 15px;
             color: #bdc3c7;
         }
-        /* 序号图标样式 */
         .task-index {
             display: inline-flex;
             align-items: center;
             justify-content: center;
             width: 24px;
             height: 24px;
-            border-radius: 4px; /* 圆形，改成8px就是方形 */
-            background-color: #cc4471; /* 和添加按钮同色，保持风格统一 */
+            border-radius: 4px;
+            background-color: #cc4471;
             color: white;
             font-size: 12px;
             font-weight: 600;
-            margin-right: 8px; /* 与任务名称的间距 */
+            margin-right: 8px;
         }
         .task-item.done .task-index {
-            background-color: #2ecc71; /* 已完成任务序号用绿色 */
+            background-color: #2ecc71;
         }
         .add-btn-wrapper {
-            position: absolute; /* 相对于父容器.container定位 */
-            right: 30px; /* 和.container的内边距一致，避免贴边太近 */
-            top: 30px; /* 和.container的内边距一致，和标题对齐 */
-            z-index: 10; /* 确保在容器内上层，不被标题遮挡 */
+            position: absolute;
+            right: 30px;
+            top: 30px;
+            z-index: 10;
         }
         #addTaskBtn {
             width: 48px;
@@ -371,20 +384,18 @@
             box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
         }
 
-        /* 弹窗样式 */
         .modal {
-            display: none; /* 默认隐藏 */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* 半透明遮罩 */
+            background-color: rgba(0, 0, 0, 0.5);
             z-index: 100;
             align-items: center;
             justify-content: center;
         }
-        /* 弹窗样式同步缩放 */
         .modal-content {
             background-color: #f3efef;
             padding: 30px;
@@ -396,9 +407,8 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             display: flex;
             flex-direction: column;
-            /* 新增缩放，与主界面保持一致 */
             transform: scale(0.82);
-            transform-origin: center; /* 弹窗缩放原点设为中心 */
+            transform-origin: center;
         }
         .modal-header {
             display: flex;
@@ -427,9 +437,9 @@
         .modal-body {
             display: flex;
             flex-direction: column;
-            gap: 15px; /* 输入框之间的间距，可保留 */
-            margin-bottom: 10px; /* 原可能是20px，调小后贴近按钮 */
-            flex: 1; /* 新增，让内容区占满弹窗中间空间，进一步拉近距离 */
+            gap: 15px;
+            margin-bottom: 10px;
+            flex: 1;
         }
         .modal-footer {
             display: flex;
@@ -459,7 +469,6 @@
             background-color: #dcdde1;
         }
 
-        /* 弹窗输入框样式 */
         #modalTaskInput,
         #modalNoteInput {
             padding: 12px 15px;
@@ -480,9 +489,8 @@
             font-size: 18px;
         }
 
-        /* 编辑任务弹窗按钮样式 */
         #confirmEdit {
-            background-color: #f39c12; /* 编辑按钮用橙色，与添加按钮区分 */
+            background-color: #f39c12;
             color: white;
         }
         #confirmEdit:hover {
@@ -499,17 +507,16 @@
         .modal-close {
             background: none;
             border: none;
-            font-size: 24px; /* 调大字号，让×更清晰 */
+            font-size: 24px;
             cursor: pointer;
             color: #7f8c8d;
             transition: color 0.2s ease;
-            padding: 0 5px; /* 增加点击区域 */
+            padding: 0 5px;
         }
         .modal-close:hover {
-            color: #e74c3c; /*  hover时变红，提升交互感 */
+            color: #e74c3c;
         }
 
-        /* 👇 补全输入框样式，作用于编辑弹窗的两个输入框 */
         .modal-input,
         .modal-textarea {
             padding: 12px 15px;
@@ -517,29 +524,29 @@
             border-radius: 8px;
             font-size: 16px;
             width: 100%;
-            transition: all 0.3s ease; /* 增加过渡效果，提升交互 */
+            transition: all 0.3s ease;
         }
-        /* 输入框聚焦样式 */
         .modal-input:focus,
         .modal-textarea:focus {
             outline: none;
-            border-color: #3498db; /* 聚焦时变蓝色边框 */
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1); /* 轻微发光效果 */
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
-        /* 备注文本域单独样式 */
         .modal-textarea {
             resize: vertical;
             min-height: 250px;
             font-size: 18px;
-            line-height: 1.5; /* 行高优化，方便阅读长备注 */
+            line-height: 1.5;
         }
-
-
     </style>
 </head>
 <body>
 <div class="container">
     <h1>TodoList</h1>
+    <!-- 新增：搜索框 DOM 结构 -->
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="搜索任务标题/内容，支持实时检索...">
+    </div>
     <!-- 右上角添加按钮 -->
     <div class="add-btn-wrapper">
         <button id="addTaskBtn">+</button>
@@ -557,8 +564,6 @@
         <ul class="task-list" id="completedList"></ul>
     </div>
 </div>
-
-
 
 <!-- 添加任务弹窗 -->
 <div class="modal" id="addTaskModal">
@@ -596,13 +601,8 @@
     </div>
 </div>
 
-
-
 <script>
     // 获取DOM元素
-    // const taskInput = document.getElementById('taskInput');
-    // const noteInput = document.getElementById('noteInput');
-    // const addBtn = document.getElementById('addBtn');
     const addTaskBtn = document.getElementById('addTaskBtn');
     const addTaskModal = document.getElementById('addTaskModal');
     const closeModal = document.getElementById('closeModal');
@@ -614,6 +614,8 @@
     const completedList = document.getElementById('completedList');
     const tabs = document.querySelectorAll('.tab');
     const tabContents = document.querySelectorAll('.tab-content');
+    // 新增：获取搜索框DOM
+    const searchInput = document.getElementById('searchInput');
 
     // 编辑弹窗相关元素
     const editTaskModal = document.getElementById('editTaskModal');
@@ -628,7 +630,6 @@
 
     // 初始化任务列表
     let tasks = JSON.parse(localStorage.getItem('todoTasks') || '[]');
-    // 兼容旧数据，添加updateTime字段（仅用于显示）
     tasks = tasks.map(task => ({
         ...task,
         updateTime: task.updateTime || new Date().toISOString()
@@ -652,17 +653,28 @@
         });
     });
 
-    // 加载任务，按当前数组顺序渲染（用户拖拽后的顺序）
-    function loadTasks() {
+    // 核心修改：新增关键词参数，支持筛选渲染
+    function loadTasks(searchKeyword = '') {
         pendingList.innerHTML = '';
         completedList.innerHTML = '';
-        let pendingIndex = 1; // 待办列表独立序号计数器
-        let completedIndex = 1; // 已完成列表独立序号计数器
+        let pendingIndex = 1;
+        let completedIndex = 1;
 
-        // 遍历任务，按状态分配到对应列表并单独计数
-        tasks.forEach((task, index) => {
+        // 过滤任务：无关键词则显示全部，有关键词则匹配标题+备注
+        const filteredTasks = tasks.filter(task => {
+            if (!searchKeyword) return true;
+            const keyword = searchKeyword.toLowerCase();
+            // 全文检索：标题+备注 都转小写，不区分大小写
+            const taskText = task.text.toLowerCase();
+            const taskNote = task.note ? task.note.toLowerCase() : '';
+            return taskText.includes(keyword) || taskNote.includes(keyword);
+        });
+
+        // 遍历过滤后的任务
+        filteredTasks.forEach((task, originIndex) => {
+            // 找到原数组的真实索引，保证编辑/删除/拖拽正常
+            const realIndex = tasks.findIndex(t => t.text === task.text && t.note === task.note && t.updateTime === task.updateTime);
             let currentIndex;
-            // 按任务状态确定使用哪个序号
             if (task.done) {
                 currentIndex = completedIndex;
                 completedIndex++;
@@ -670,32 +682,25 @@
                 currentIndex = pendingIndex;
                 pendingIndex++;
             }
-            addTaskToDOM(task, index, currentIndex); // 传入对应列表的序号
+            addTaskToDOM(task, realIndex, currentIndex);
         });
-        checkEmptyState();
-        initDragAndDrop(); // 初始化拖拽功能
+        checkEmptyState(searchKeyword);
+        initDragAndDrop();
     }
 
-    // 检查空状态并显示提示
-    function checkEmptyState() {
+    // 优化空状态提示：区分「无任务」和「无搜索结果」
+    function checkEmptyState(searchKeyword = '') {
+        // 待办列表空状态
         if (pendingList.children.length === 0) {
-            pendingList.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">📋</div>
-                    <h3>暂无待办任务</h3>
-                    <p>添加你的第一个任务吧！</p>
-                </div>
-            `;
+            pendingList.innerHTML = searchKeyword
+                ? `<div class="empty-state"><div class="empty-icon">🔍</div><h3>暂无匹配的待办任务</h3><p>更换关键词试试吧</p></div>`
+                : `<div class="empty-state"><div class="empty-icon">📋</div><h3>暂无待办任务</h3><p>添加你的第一个任务吧！</p></div>`;
         }
-
+        // 已完成列表空状态
         if (completedList.children.length === 0) {
-            completedList.innerHTML = `
-                <div class="empty-state">
-                    <div class="empty-icon">✅</div>
-                    <h3>暂无已完成任务</h3>
-                    <p>完成任务后会显示在这里</p>
-                </div>
-            `;
+            completedList.innerHTML = searchKeyword
+                ? `<div class="empty-state"><div class="empty-icon">🔍</div><h3>暂无匹配的已完成任务</h3><p>更换关键词试试吧</p></div>`
+                : `<div class="empty-state"><div class="empty-icon">✅</div><h3>暂无已完成任务</h3><p>完成任务后会显示在这里</p></div>`;
         }
     }
 
@@ -706,17 +711,14 @@
         li.setAttribute('data-index', index);
         li.draggable = true;
 
-        // 构建任务HTML（包含备注和更新时间）
         let noteHtml = '';
         if (task.note) {
-            // 关键：将换行符\n替换为HTML换行标签<br>
             const noteWithBr = task.note.replace(/\n/g, '<br>');
             noteHtml = `<div class="task-note"> ${noteWithBr}</div>`;
         }
 
         li.innerHTML = `
         <div class="task-header">
-            <!-- 把纯文本序号改成带.task-index类的图标容器 -->
             <span class="task-text">
                 <strong>
                     <span class="task-index">${taskNum}</span>${task.text}
@@ -732,76 +734,61 @@
         <div class="update-time">更新于: ${formatTime(task.updateTime)}</div>
         `;
 
-        // 根据任务状态添加到对应列表
         if (task.done) {
             completedList.appendChild(li);
         } else {
             pendingList.appendChild(li);
         }
 
-        // 完成/取消完成事件
         li.querySelector('.toggleBtn').addEventListener('click', () => {
             task.done = !task.done;
             task.updateTime = new Date().toISOString();
             saveTasks();
-            loadTasks(); // 重新渲染时，已完成任务按数组顺序排在最后
+            loadTasks(searchInput.value.trim()); // 搜索状态下更新列表
         });
 
-        // 编辑任务事件
         li.querySelector('.editBtn').addEventListener('click', () => {
-            // 记录当前编辑的任务索引（关键：用index关联任务数据）
             currentEditIndex = index;
-            // 加载任务数据到编辑弹窗
-            modalEditTaskInput.value = task.text; // 显示任务内容
-            modalEditNoteInput.value = task.note || ''; // 显示备注（若无则为空）
-            // 打开编辑弹窗
+            modalEditTaskInput.value = task.text;
+            modalEditNoteInput.value = task.note || '';
             editTaskModal.style.display = 'flex';
-            // 聚焦到任务输入框，方便直接编辑
             modalEditTaskInput.focus();
         });
 
-        // 删除任务事件
         li.querySelector('.deleteBtn').addEventListener('click', () => {
             tasks.splice(index, 1);
             saveTasks();
-            loadTasks();
+            loadTasks(searchInput.value.trim()); // 搜索状态下更新列表
         });
     }
 
-    // 初始化拖拽排序功能
     // 初始化拖拽排序功能
     function initDragAndDrop() {
         const taskLists = [pendingList, completedList];
         let draggedItem = null;
         let currentList = null;
 
-        // 为所有任务项添加拖拽事件
         document.querySelectorAll('.task-item').forEach(item => {
-            // 拖拽开始
             item.addEventListener('dragstart', (e) => {
                 draggedItem = item;
-                currentList = item.parentNode; // 记录当前所在列表
+                currentList = item.parentNode;
                 setTimeout(() => item.classList.add('dragging'), 0);
                 e.dataTransfer.setData('text/plain', item.getAttribute('data-index'));
             });
 
-            // 拖拽结束
             item.addEventListener('dragend', () => {
                 draggedItem = null;
                 document.querySelectorAll('.task-item').forEach(i => i.classList.remove('dragging'));
-                updateTaskOrder(); // 拖拽结束后更新任务顺序
-                loadTasks(); // 重新渲染页面，刷新序号
+                updateTaskOrder();
+                loadTasks(searchInput.value.trim()); // 搜索状态下更新列表
             });
         });
 
-        // 为列表添加拖拽目标事件
         taskLists.forEach(list => {
-            // 允许放置
             list.addEventListener('dragover', (e) => {
                 e.preventDefault();
                 if (!draggedItem) return;
 
-                // 找到放置位置的参考元素
                 const afterElement = getDragAfterElement(list, e.clientY);
                 const draggable = draggedItem;
 
@@ -812,11 +799,9 @@
                 }
             });
 
-            // 处理放置
             list.addEventListener('drop', (e) => {
                 e.preventDefault();
                 if (draggedItem && currentList !== list) {
-                    // 跨列表拖拽时更新任务状态
                     const index = parseInt(draggedItem.getAttribute('data-index'));
                     tasks[index].done = list.id === 'completedList';
                     tasks[index].updateTime = new Date().toISOString();
@@ -824,7 +809,6 @@
             });
         });
 
-        // 计算拖拽后应该放置的位置
         function getDragAfterElement(container, y) {
             const draggableElements = [...container.querySelectorAll('.task-item:not(.dragging)')];
 
@@ -841,23 +825,17 @@
         }
     }
 
-    // 更新任务顺序（核心：完全按照用户拖拽后的视觉顺序保存）
+    // 更新任务顺序
     function updateTaskOrder() {
         const newOrder = [];
-
-        // 先收集待办列表的任务（按视觉顺序）
         document.querySelectorAll('#pendingList .task-item').forEach(item => {
             const index = parseInt(item.getAttribute('data-index'));
             newOrder.push(tasks[index]);
         });
-
-        // 再收集已完成列表的任务（按视觉顺序）
         document.querySelectorAll('#completedList .task-item').forEach(item => {
             const index = parseInt(item.getAttribute('data-index'));
             newOrder.push(tasks[index]);
         });
-
-        // 用新顺序替换原任务数组
         tasks = newOrder;
         saveTasks();
     }
@@ -867,74 +845,32 @@
         localStorage.setItem('todoTasks', JSON.stringify(tasks));
     }
 
-    // 添加任务按钮事件
-    // addBtn.addEventListener('click', () => {
-    //     const text = taskInput.value.trim();
-    //     const note = noteInput.value.trim();
-    //
-    //     if (text) {
-    //         // 把 unshift 改成 push，新任务添加到数组末尾（待办列表最后）
-    //         tasks.push({
-    //             text,
-    //             note,
-    //             done: false,
-    //             updateTime: new Date().toISOString()
-    //         });
-    //
-    //         // 清空输入框
-    //         taskInput.value = '';
-    //         noteInput.value = '';
-    //
-    //         // 保存并重新加载
-    //         saveTasks();
-    //         loadTasks();
-    //
-    //         // 聚焦到任务输入框
-    //         taskInput.focus();
-    //     }
-    // });
-
-    // 按回车添加任务
-    // taskInput.addEventListener('keypress', (e) => {
-    //     if (e.key === 'Enter' && !e.shiftKey) {
-    //         e.preventDefault();
-    //         addBtn.click();
-    //     }
-    // });
-
-    // 页面加载时初始化
-
     // 打开弹窗
     addTaskBtn.addEventListener('click', () => {
         addTaskModal.style.display = 'flex';
-        modalTaskInput.focus(); // 聚焦到输入框
+        modalTaskInput.focus();
     });
 
     // 关闭弹窗的通用函数
     function hideModal() {
         addTaskModal.style.display = 'none';
-        modalTaskInput.value = ''; // 清空输入框
+        modalTaskInput.value = '';
         modalNoteInput.value = '';
     }
 
-    // 点击关闭按钮、取消按钮、遮罩层，都关闭弹窗
     closeModal.addEventListener('click', hideModal);
     cancelAdd.addEventListener('click', hideModal);
     addTaskModal.addEventListener('click', (e) => {
         if (e.target === addTaskModal) hideModal();
     });
 
-    // 关闭编辑弹窗的通用函数
     function hideEditModal() {
         editTaskModal.style.display = 'none';
-        currentEditIndex = -1; // 重置编辑索引（避免错误）
+        currentEditIndex = -1;
     }
 
-    // 编辑弹窗关闭按钮事件
     closeEditModal.addEventListener('click', hideEditModal);
-    // 编辑弹窗取消按钮事件
     cancelEdit.addEventListener('click', hideEditModal);
-    // 点击编辑弹窗外部关闭
     editTaskModal.addEventListener('click', (e) => {
         if (e.target === editTaskModal) hideEditModal();
     });
@@ -942,16 +878,16 @@
     // 确认添加任务
     confirmAdd.addEventListener('click', () => {
         const text = modalTaskInput.value.trim();
-        const note = modalNoteInput.value.trim(); // 保留\n换行符
+        const note = modalTaskInput.value.trim();
         if (text) {
             tasks.unshift({
                 text,
-                note, // 原样存入，保留换行
+                note,
                 done: false,
                 updateTime: new Date().toISOString()
             });
             saveTasks();
-            loadTasks();
+            loadTasks(searchInput.value.trim()); // 搜索状态下更新列表
             hideModal();
         } else {
             alert('请输入任务内容！');
@@ -960,42 +896,34 @@
 
     // 编辑任务：确认修改按钮事件
     confirmEdit.addEventListener('click', () => {
-        // 验证任务内容不为空
         const newText = modalEditTaskInput.value.trim();
         if (!newText) {
             alert('任务内容不能为空！');
             return;
         }
-        // 获取新的备注内容（保留换行符）
         const newNote = modalEditNoteInput.value.trim();
-        // 更新任务数据（通过currentEditIndex定位到具体任务）
         tasks[currentEditIndex].text = newText;
         tasks[currentEditIndex].note = newNote;
-        tasks[currentEditIndex].updateTime = new Date().toISOString(); // 更新时间戳
-        // 保存到本地存储并刷新列表
+        tasks[currentEditIndex].updateTime = new Date().toISOString();
         saveTasks();
-        loadTasks();
-        // 关闭编辑弹窗
+        loadTasks(searchInput.value.trim()); // 搜索状态下更新列表
         hideEditModal();
     });
 
-    // 编辑任务：按Enter保存（任务输入框）
     modalEditTaskInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault(); // 阻止默认换行
-            confirmEdit.click(); // 触发保存
+            e.preventDefault();
+            confirmEdit.click();
         }
     });
 
-    // 编辑任务：按Ctrl+Enter保存（备注输入框）
     modalEditNoteInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && e.ctrlKey) {
-            e.preventDefault(); // 阻止默认换行
-            confirmEdit.click(); // 触发保存
+            e.preventDefault();
+            confirmEdit.click();
         }
     });
 
-    // 弹窗内按回车添加任务
     modalTaskInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
@@ -1003,6 +931,13 @@
         }
     });
 
+    // ========== 核心新增：实时搜索事件 ==========
+    searchInput.addEventListener('input', function() {
+        const keyword = this.value.trim();
+        loadTasks(keyword);
+    });
+
+    // 页面加载初始化
     loadTasks();
 </script>
 </body>
